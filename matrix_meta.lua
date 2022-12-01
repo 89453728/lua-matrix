@@ -9,7 +9,7 @@ function matrix_meta.__tostring(o)
    local buff = ( (ROW_FORMAT == '(') and
       ('matrix[' .. tostring(o.size[1]) .. ','
        .. tostring(o.size[2]) .. '] (')
-       or '')
+      or '')
    for i,e in ipairs(o.data) do
       for j,k in ipairs(e) do
 	 buff = buff .. tostring(k)
@@ -18,7 +18,7 @@ function matrix_meta.__tostring(o)
 	 end
       end
       buff = buff .. ((ROW_FORMAT == '(') and '),(' or
-		      '\n')
+	 '\n')
    end
    return string.sub(buff,0, (ROW_FORMAT == '(') and
 		     #buff - 2 or #buff - 1)
@@ -40,6 +40,23 @@ function matrix_meta.__index(obj,key)
    else
       return nil
    end
+end
+
+local function column(data, c)
+   local ret = {}
+   for i = 1,#data do
+      table.insert(ret,data[i][c])
+   end
+   return ret
+end
+
+local function mulrows(row1, row2)
+   assert(#row1 == #row2)
+   local cum = 0
+   for i = 1,#row1 do
+      cum = cum + row1[i] * row2[i]
+   end
+   return cum
 end
 
 function matrix_meta.__newindex(obj,key,value)
@@ -94,7 +111,7 @@ local function fill(r,c,value)
    return ret
 end
 
-function matrix_meta.__add(a,b)
+function matrix_meta.add(a,b)
    assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
    local other_matrix = {size = {a.size[1],b.size[2]},
 			 data = fill(a.size[1],b.size[2])}
@@ -106,16 +123,124 @@ function matrix_meta.__add(a,b)
    return other_matrix
 end
 
-function matrix_meta.__sub(a,b)
-   assert(a.size[1] == b.size[1] and a.size[2] == b.size[2])
-   local other_matrix = matrix:new(a.size[1],a.size[2])
+function matrix_meta.sub(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
    for i = 1,a.size[1] do
-      for j = 1,a.size[2] do
-	 other_matrix.data[i][j] = a:elem(i,j) -
-	    b:elem(i,j)
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] + b[i][j]
       end
    end
    return other_matrix
+end
+
+function matrix_meta.mul(a,b)
+   assert(a.size[2] == b.size[1])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = mulrows(a.data[i],column(b.data,i,j))
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.mod(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] % b[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.pow(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] ^ b[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.unm(a)
+   local other_matrix = {size = {a.size[1],a.size[2]},
+			 data = fill(a.size[1],a.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,a.size[2] do
+	 other_matrix.data[i][j] = -a.data[i][j] 
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.band(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] & b[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.bor(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] | b[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.bxor(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   local other_matrix = {size = {a.size[1],b.size[2]},
+			 data = fill(a.size[1],b.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 other_matrix.data[i][j] = a.data[i][j] ~ b[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.bnot(a)
+   local other_matrix = {size = {a.size[1],a.size[2]},
+			 data = fill(a.size[1],a.size[2])}
+   for i = 1,a.size[1] do
+      for j = 1,a.size[2] do
+	 other_matrix.data[i][j] = ~a[i][j]
+      end
+   end
+   return other_matrix
+end
+
+function matrix_meta.len(a)
+   return a.size
+end
+
+function matrix_meta.eq(a,b)
+   assert(a.size[1] == b.size[1] and a.size[2] == a.size[2])
+   for i = 1,a.size[1] do
+      for j = 1,b.size[2] do
+	 if a.data[i][j] ~= b.data[i][j] then return false end
+      end
+   end
+   return true
 end
 
 return matrix_meta

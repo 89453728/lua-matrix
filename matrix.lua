@@ -110,4 +110,47 @@ function matrix:create(o,j)
    return self:new(o,j)
 end
 
+function matrix_meta.__add(a,b)
+   return matrix:new(matrix_meta.add(a,b))
+end
+
+function matrix_meta.__sub(a,b)
+   return matrix:new(matrix_meta.sub(a,b))
+end
+
+function matrix_meta.__mul(a,b)
+   return matrix:new(matrix_meta.mul(a,b))
+end
+
+function matrix_meta.__mod(a,b)
+   return matrix:new(matrix_meta.mod(a,b))
+end
+
+function matrix_meta.__pow(a,b)
+   return matrix:new(matrix_meta.pow(a,b))
+end
+
+function matrix_meta.__band(a,b)
+   return matrix:new(matrix_meta.band(a,b))
+end
+
+function matrix_meta.__bor(a,b)
+   return matrix:new(matrix_meta.bor(a,b))
+end
+
+function matrix_meta.__bxor(a,b)
+   return matrix:new(matrix_meta.bxor(a,b))
+end
+
+function matrix_meta.__bnot(a)
+   return matrix:new(matrix_meta.bnot(a))
+end
+
+function matrix_meta.__unm(a)
+   return matrix:new(matrix_meta.unm(a))
+end
+
+matrix_meta.__len = matrix_meta.len
+matrix_meta.__eq = matrix_meta.eq
+
 return matrix 
