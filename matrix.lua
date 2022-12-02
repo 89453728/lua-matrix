@@ -22,24 +22,16 @@ local matrix_meta = require'matrix_meta'
 
 
 local function check_data(data)
-   local rows = 0
-   local columns = 0
+   local rows,columns = 0,0
 
-   if #data > 0 then
-      rows = #data
-   else
-      return 0,0
-   end
+   if #data > 0 then rows = #data
+   else return 0,0 end
+
    for i,e in pairs(data) do
-      if type(i) ~= 'number' then
-	 return false
-      end
-      if i == 1 then
-	 columns = #e
+      if type(i) ~= 'number' then return false end
+      if i == 1 then columns = #e
       else
-	 if #e ~= columns then
-	    return false
-	 end
+	 if #e ~= columns then return false end
       end
    end
    return rows,columns
@@ -52,9 +44,7 @@ function matrix:elem(i,j)
 	 if type(j) == 'number' and j < self.size[2] then
 	    local ret = {}
 	    for i,e in ipairs(self.data) do
-	       if i == j then
-		  table.insert(ret, e)
-	       end
+	       if i == j then table.insert(ret,e) end
 	    end
 	    return ret
 	 end
@@ -62,17 +52,10 @@ function matrix:elem(i,j)
    elseif type(i) == 'number' then
       -- calling position (can be row)
       if j then
-	 if type(j) == 'number' then
-	    return self.data[i][j]
-	 else
-	    return nil
-	 end
-      else
-	 return self.data[i]
-      end
-   else
-      return nil
-   end
+	 if type(j) == 'number' then return self.data[i][j]
+	 else return nil end
+      else return self.data[i] end
+   else return nil end
 end
 
 function matrix:new(o,j)
@@ -90,65 +73,26 @@ function matrix:new(o,j)
 	 if r then
 	    ret_value.data = o.data
 	    ret_value.size = {r,c}
-	 else
-	    ret_value = {}
-	 end
-      else
-	 ret_value = {}
-      end
+	 else ret_value = {} end
+      else ret_value = {} end
    end
    setmetatable(ret_value,matrix_meta)
    return ret_value
 end
 
--- performing calling to matrix constructor
-function matrix:matrix(o,j)
-   return self:new(o,j)
-end
-
-function matrix:create(o,j)
-   return self:new(o,j)
-end
-
-function matrix_meta.__add(a,b)
-   return matrix:new(matrix_meta.add(a,b))
-end
-
-function matrix_meta.__sub(a,b)
-   return matrix:new(matrix_meta.sub(a,b))
-end
-
-function matrix_meta.__mul(a,b)
-   return matrix:new(matrix_meta.mul(a,b))
-end
-
-function matrix_meta.__mod(a,b)
-   return matrix:new(matrix_meta.mod(a,b))
-end
-
-function matrix_meta.__pow(a,b)
-   return matrix:new(matrix_meta.pow(a,b))
-end
-
-function matrix_meta.__band(a,b)
-   return matrix:new(matrix_meta.band(a,b))
-end
-
-function matrix_meta.__bor(a,b)
-   return matrix:new(matrix_meta.bor(a,b))
-end
-
-function matrix_meta.__bxor(a,b)
-   return matrix:new(matrix_meta.bxor(a,b))
-end
-
-function matrix_meta.__bnot(a)
-   return matrix:new(matrix_meta.bnot(a))
-end
-
-function matrix_meta.__unm(a)
-   return matrix:new(matrix_meta.unm(a))
-end
+-- call performs
+function matrix:matrix(o,j) return self:new(o,j) end
+function matrix:create(o,j) return self:new(o,j) end
+function matrix_meta.__add(a,b) return matrix:new(matrix_meta.add(a,b)) end
+function matrix_meta.__sub(a,b) return matrix:new(matrix_meta.sub(a,b)) end
+function matrix_meta.__mul(a,b) return matrix:new(matrix_meta.mul(a,b)) end
+function matrix_meta.__mod(a,b) return matrix:new(matrix_meta.mod(a,b)) end
+function matrix_meta.__pow(a,b) return matrix:new(matrix_meta.pow(a,b)) end
+function matrix_meta.__band(a,b) return matrix:new(matrix_meta.band(a,b)) end
+function matrix_meta.__bor(a,b) return matrix:new(matrix_meta.bor(a,b)) end
+function matrix_meta.__bxor(a,b) return matrix:new(matrix_meta.bxor(a,b)) end
+function matrix_meta.__bnot(a) return matrix:new(matrix_meta.bnot(a)) end
+function matrix_meta.__unm(a) return matrix:new(matrix_meta.unm(a)) end
 
 matrix_meta.__len = matrix_meta.len
 matrix_meta.__eq = matrix_meta.eq
