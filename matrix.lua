@@ -12,8 +12,6 @@ local ROW_FORMAT = config.ROW_FORMAT
 
 local matrix = {}
 
-matrix.data = {}
-matrix.size = {0,0}
 matrix.VERSION = '0.0.1'
 matrix.DESCRIPTION = 'Matrix library.'
 matrix.LICENSE = 'BSD'
@@ -58,8 +56,16 @@ function matrix:elem(i,j)
    else return nil end
 end
 
+function table.copy(t)
+   local ret = {}
+   for i,e in pairs(t) do
+      ret[i] = e
+   end
+   return ret
+end
+
 function matrix:new(o,j)
-   local ret_value =self or {}
+   local ret_value = {size={0,0},data = {}}
    
    if type(o) == 'number' then
       local key_value = table.pack(o,j)
@@ -68,13 +74,13 @@ function matrix:new(o,j)
 	 ret_value.size = {key_value[1],key_value[2]}
       end
    elseif type(o) == 'table' then
+      o = table.copy(o)
       if o.data then
 	 local r,c = check_data(o.data)
 	 if r then
-	    ret_value.data = o.data
+	    ret_value.data = table.copy(o.data)
 	    ret_value.size = {r,c}
-	 else ret_value = {} end
-      else ret_value = {} end
+	 end end
    end
    setmetatable(ret_value,matrix_meta)
    return ret_value

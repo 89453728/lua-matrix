@@ -1,6 +1,6 @@
 -- Configuration file for matrix library
 
-local ROW_FORMAT = '(' --[[ '(' (each row between 
+local ROW_FORMAT = '\n' --[[ '(' (each row between 
    brackets]]
 local VALUE_SEPARATOR = '\t' --[[ ' ' (you can use 
    space also]]
