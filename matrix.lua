@@ -59,7 +59,8 @@ end
 function table.copy(t)
    local ret = {}
    for i,e in pairs(t) do
-      ret[i] = e
+      if type(e) ~= 'table' then ret[i] = e else
+	 ret[i] = table.copy(e) end
    end
    return ret
 end
@@ -87,8 +88,8 @@ function matrix:new(o,j)
 end
 
 -- call performs
-function matrix:matrix(o,j) return self:new(o,j) end
-function matrix:create(o,j) return self:new(o,j) end
+function matrix:matrix(o,j) return matrix:new(o,j) end
+function matrix:create(o,j) return matrix:new(o,j) end
 function matrix_meta.__add(a,b) return matrix:new(matrix_meta.add(a,b)) end
 function matrix_meta.__sub(a,b) return matrix:new(matrix_meta.sub(a,b)) end
 function matrix_meta.__mul(a,b) return matrix:new(matrix_meta.mul(a,b)) end
